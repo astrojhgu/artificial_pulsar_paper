@@ -6,6 +6,7 @@
 \let\VANthebibliography\thebibliography
 \def\thebibliography{\DeclareRobustCommand{\VAN}[3]{##3}\VANthebibliography}
 \usepackage{graphicx}	% Including figure files
+\usepackage{pict2e}
 \usepackage{amsmath}	% Advanced maths commands
 %\usepackage{amssymb}	% Extra maths symbols
 
@@ -89,6 +90,23 @@ where $S$ is the spectrum and $p$ is the pure phase-related part.
 In following sections, we simply assume $S(\nu)\equiv 1$. 
 When in actual experiments, no further cost is needed if we introduce a non-trivial $S(\nu)$.
 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{dm0_profile.pdf}
+    \caption{Frequency dependent pulse profile before the dispersion effect is applied. 
+    The period is set to be 20 ms and the amplitude profile is described a gaussian function with $\sigma=0.05$}
+    \label{fig:dm0_profile}
+ \end{figure}
+
+
+ \begin{figure}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{dm10_profile.pdf}
+    \caption{Frequency dependent pulse profile with a $DM=10$ dispersion effect applied. The parameter of the pulsar
+    is same as the one used in Figure \ref{fig:dm0_profile}}
+    \label{fig:dm10_profile}
+ \end{figure}
 
 \subsection{Emitting Generated Signal}
 
