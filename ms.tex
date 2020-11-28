@@ -63,6 +63,15 @@ We design it to be able to simulate the dispersion effect and arbitrary pulse pr
 Our implementation of APD is composed of three modules: 1) a high performance workstation that is responsible of computing the pulsar signal online, 2) a software-defined radio transmitter that receives the command from the workstation and convert it to voltage signal, which is then fed into 3) a radio frequency front-end. 
 The radio frequency front-end is further composed of a radio frequency power amplifier (RFPA hereafter) and an antenna that is used to broadcast the actual signal.
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.95\columnwidth]{flow_chart.pdf}
+    \caption{The flow chart of emitting the simulated pulsar signal.
+    }
+    \label{fig:flow_chart}
+\end{figure}
+
+
 The APD can be placed near the low-frequency pulsar observation device (LFPOD hereafter). 
 It is not necessary for the emitting antenna to be placed inside the range of the primary beam LFPOD.
 The power of the emitted signal can be amplified to a high enough level so that when the signal is received by the LFPOD from its side lobes it approximates the power level of a natural pulsar.
