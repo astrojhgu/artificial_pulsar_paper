@@ -60,8 +60,8 @@ keyword1 -- keyword2 -- keyword3
 \section{Artificial Pulsar Device}
 The artificial pulsar device (APD hereafter) is a device that is able to emit simulated pulsar signal within some certain bandpass.
 We design it to be able to simulate the dispersion effect and arbitrary pulse profile of a pulsar.
-Our implementation of APD is composed of three modules: 1) a high performance workstation that is responsible of computing the pulsar signal online, 2) a software-defined radio transmitter that receives the command from the workstation and convert it to voltage signal, which is then fed into 3) a radio frequency front-end. 
-The radio frequency front-end is further composed of a radio frequency power amplifier (RFPA hereafter) and an antenna that is used to broadcast the actual signal.
+Our implementation of APD is composed of three modules: 1) a high performance workstation that is responsible of computing the pulsar signal online, 2) a software-defined radio (SDR) transmitter that accepts commands and data stream from the workstation and convert it to voltage signal, which is then fed into 3) a radio frequency front-end. 
+The radio frequency front-end is further composed of a radio frequency power amplifier (PA hereafter) and an antenna that is used to broadcast the actual signal.
 
 \begin{figure}
     \centering
@@ -73,10 +73,22 @@ The radio frequency front-end is further composed of a radio frequency power amp
 
 
 The APD can be placed near the low-frequency pulsar observation device (LFPOD hereafter). 
-It is not necessary for the emitting antenna to be placed inside the range of the primary beam LFPOD.
+Though possible, it is not necessary for the emitting antenna to be placed inside the range of the primary beam LFPOD.
 The power of the emitted signal can be amplified to a high enough level so that when the signal is received by the LFPOD from its side lobes it approximates the power level of a natural pulsar.
 
+In this section, we describe the algorithms and steps that are used to generate the radio frequency signal, which is later used to tune LFPODs.
+
 \subsection{Computing Artificial Pulsar Signal}
+\subsubsection{Generating filterbank data before dispersion}
+The pulse amplitude profile $f$ is related to two variables: frequency $\nu$ and pulse phase $\theta$, where $\theta\in[-0.5, 0.5]$.
+Given that the bandwidth is not extremely width, it is a good enough assumption that the frequency part and the phase part can be separated as
+\begin{gather}
+    f(\nu,\theta)=S(\nu)p(\theta),
+\end{gather}
+where $S$ is the spectrum and $p$ is the pure phase-related part.
+In following sections, we simply assume $S(\nu)\equiv 1$. 
+When in actual experiments, no further cost is needed if we introduce a non-trivial $S(\nu)$.
+
 
 \subsection{Emitting Generated Signal}
 
