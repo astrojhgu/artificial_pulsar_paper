@@ -81,32 +81,89 @@ In this section, we describe the algorithms and steps that are used to generate 
 
 \subsection{Computing Artificial Pulsar Signal}
 \subsubsection{Generating filterbank data before dispersion}
-The pulse amplitude profile $f$ is related to two variables: frequency $\nu$ and pulse phase $\theta$, where $\theta\in[-0.5, 0.5]$.
+The pulse amplitude profile $f$ is related to two variables: frequency $\nu$ and pulse phase $\theta$ and it meets
+\begin{gather}
+    f(\nu, \theta+1)=f(\nu, \theta)
+\end{gather}
 Given that the bandwidth is not extremely width, it is a good enough assumption that the frequency part and the phase part can be separated as
 \begin{gather}
     f(\nu,\theta)=S(\nu)p(\theta),
 \end{gather}
 where $S$ is the spectrum and $p$ is the pure phase-related part.
 In following sections, we simply assume $S(\nu)\equiv 1$. 
-When in actual experiments, no further cost is needed if we introduce a non-trivial $S(\nu)$.
+When in actual experiments, no further cost is required if we introduce a non-trivial $S(\nu)$.
 
+By assuming 
+\begin{gather}
+    p(\theta)=\left \{
+    \begin{array}{rl}
+        p(\theta-1) &\theta \geq 0.5\\
+         \exp(-\frac{\theta^2}{2w^2}) & \theta\in[-0.5, 0.5) \\
+        p(\theta+1) &\theta < -0.5\\
+    \end{array}
+    \right ., 
+\end{gather}
+we calculate an example of the frequency-dependent pulse profile of a fake pulsar with period assumed to be 20 ms, as is shown in Figure \ref{fig:dm0_profile}. The frequency range is assumed to be 150-200 MHz here.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.9\columnwidth]{dm0_profile.pdf}
     \caption{Frequency dependent pulse profile before the dispersion effect is applied. 
-    The period is set to be 20 ms and the amplitude profile is described a gaussian function with $\sigma=0.05$}
+    The period is set to be 20 ms and the amplitude profile is described a Gaussian function with $w=0.05$}
     \label{fig:dm0_profile}
  \end{figure}
-
+ 
+ Then we need to apply the effects of dispersion to the pulse signal. According to e.g., \citet{2012hpa..book.....L}, the delay of frequency $\nu$ that is caused by the dispersion can be calculated as 
+ \begin{gather}
+     \Delta t(\nu)\simeq 4.15\times 10^6~{\rm ms}~\left(\frac{{\rm MHz}}{\nu}\right)^2\frac{\rm DM}{\rm pc~cm^{-3}}.
+ \end{gather}
+ So that the frequency dependent pulse profile after the dispersion effect is applied can be calculated as
+ \begin{gather}
+     f^{\rm d}(\nu, \theta)=f(\nu, \theta-\Delta t(\nu)/\tau),
+ \end{gather}
+where $\tau$ is the period of the pulsar. 
+We show an example of frequency-dependent pulse profile after the dispersion effect is applied in Figure \ref{fig:dm10_profile}. The DM is assumed to be 10.0 and other parameters are same as what we set in Figure \ref{fig:dm0_profile}.
 
  \begin{figure}
     \centering
     \includegraphics[width=0.9\columnwidth]{dm10_profile.pdf}
-    \caption{Frequency dependent pulse profile with a $DM=10$ dispersion effect applied. The parameter of the pulsar
+    \caption{Frequency dependent pulse profile with a $\rm DM=10$ dispersion effect applied. The parameter of the pulsar
     is same as the one used in Figure \ref{fig:dm0_profile}}
     \label{fig:dm10_profile}
  \end{figure}
+ 
+With the amplitude profile in hand, we go on to generate the narrow band in-phase and quadrature (I/Q hereafter) signals.
+First we determine the sampling interval $dt$ of the final generated I/Q time series signal and the number of frequency channels to $N_{\rm ch}$ be used in follow up procession.
+The number of frequency channels further determines the bandwidth of each frequey channel as
+\begin{gather}
+    d\nu=\frac{f_{\max}-f_{\min}}{N_{\rm ch}}.
+\end{gather}
+For the sampling interval $dt$, according to the Nyquist Theorem the upper limit of which has to be $\frac{1}{2BW}$. 
+For we are using I/Q sampling here the upper limit of the sampling interval is enlarged to $1/BW$.
+The sampling interval of the narrow band I/Q data for current step can be calculated as
+\begin{gather}
+ dT=\frac{dt}{2N_{\rm ch}}.
+\end{gather}
+The factor 2 in the denominator is oversampling factor that we choose.
+Thus the number of time bins within each period is determined 
+\begin{gather}
+ N_{\rm t}=\left\lfloor\frac{\tau}{dT}\right\rfloor.
+\end{gather}
+Note that in order to achieve a high computing performance, we limit the actual period $\tau$ can only be an integer multiple of $dT$.
+
+So that for each frequency bin and time bin in a single period, we can calculate its instant complex voltage as
+\begin{gather}
+    U(\nu_{j}, t_{k})=\frac{1}{2}f^{\rm d}(\nu_j, t_{k}/\tau)(x^{\rm re}(j,k)+x^{\rm im}(j,k)i),
+\end{gather}
+where $j=1..N_{\rm ch}$, $k=1..N_{t}$, $i^2=-1$, and each $x^{\rm re}$ and $x^{\rm re}$ follows a standard normal distribution $\mathcal{N}(0,1)$ independently.
+
+The narrow band I/Q data is then fed into a over-sampled polyphase filterbank (PFB) to synthesize a broadband base-band I/Q data stream.
+We take the work of \citet{2020JAI.....950004M} as a reference of designing the PFB.
+We set the number of channels to be $N_{\rm ch}=16384$ and the taps of each channel to be 12.
+PFBs are a kind of standard digital signal processing steps, so we just skip the details of the PFB that we use in this work.
+
+The PFB outputs the baseband I/Q sampling time series, which is then sent to an SDR transmitter so that actual radio frequency (RF) signal within desired frequency range is generated continuously.
+The RF signal is fed into a power amplifier and broadcast through a proper antenna. 
 
 \subsection{Emitting Generated Signal}
 
