@@ -113,6 +113,8 @@ we calculate an example of the frequency-dependent pulse profile of a fake pulsa
     \label{fig:dm0_profile}
  \end{figure}
  
+ \subsubsection{Applying the dispersion effect}
+ 
  Then we need to apply the effects of dispersion to the pulse signal. According to e.g., \citet{2012hpa..book.....L}, the delay of frequency $\nu$ that is caused by the dispersion can be calculated as 
  \begin{gather}
      \Delta t(\nu)\simeq 4.15\times 10^6~{\rm ms}~\left(\frac{{\rm MHz}}{\nu}\right)^2\frac{\rm DM}{\rm pc~cm^{-3}}.
@@ -122,15 +124,17 @@ we calculate an example of the frequency-dependent pulse profile of a fake pulsa
      f^{\rm d}(\nu, \theta)=f(\nu, \theta-\Delta t(\nu)/\tau),
  \end{gather}
 where $\tau$ is the period of the pulsar. 
-We show an example of frequency-dependent pulse profile after the dispersion effect is applied in Figure \ref{fig:dm10_profile}. The DM is assumed to be 10.0 and other parameters are same as what we set in Figure \ref{fig:dm0_profile}.
+We show an example of frequency-dependent pulse profile after the dispersion effect is applied in Figure \ref{fig:dm1_profile}. The DM is assumed to be 10.0 and other parameters are same as what we set in Figure \ref{fig:dm0_profile}.
 
  \begin{figure}
     \centering
-    \includegraphics[width=0.9\columnwidth]{dm10_profile.pdf}
-    \caption{Frequency dependent pulse profile with a $\rm DM=10$ dispersion effect applied. The parameter of the pulsar
+    \includegraphics[width=0.9\columnwidth]{dm1_profile.pdf}
+    \caption{Frequency dependent pulse profile with a $\rm DM=1$ pc cm$^{-3}$ dispersion effect applied. The parameter of the pulsar
     is same as the one used in Figure \ref{fig:dm0_profile}}
-    \label{fig:dm10_profile}
+    \label{fig:dm1_profile}
  \end{figure}
+
+\subsubsection{Generating the narrow band I/Q sampling data}
  
 With the amplitude profile in hand, we go on to generate the narrow band in-phase and quadrature (I/Q hereafter) signals.
 First we determine the sampling interval $dt$ of the final generated I/Q time series signal and the number of frequency channels to $N_{\rm ch}$ be used in follow up procession.
@@ -157,13 +161,27 @@ So that for each frequency bin and time bin in a single period, we can calculate
 \end{gather}
 where $j=1..N_{\rm ch}$, $k=1..N_{t}$, $i^2=-1$, and each $x^{\rm re}$ and $x^{\rm re}$ follows a standard normal distribution $\mathcal{N}(0,1)$ independently.
 
+\subsubsection{Generating baseband I/Q sampling data stream}
+
 The narrow band I/Q data is then fed into a over-sampled polyphase filterbank (PFB) to synthesize a broadband base-band I/Q data stream.
 We take the work of \citet{2020JAI.....950004M} as a reference of designing the PFB.
 We set the number of channels to be $N_{\rm ch}=16384$ and the taps of each channel to be 12.
 PFBs are a kind of standard digital signal processing steps, so we just skip the details of the PFB that we use in this work.
 
-The PFB outputs the baseband I/Q sampling time series, which is then sent to an SDR transmitter so that actual radio frequency (RF) signal within desired frequency range is generated continuously.
+The PFB outputs the baseband I/Q sampling time series.
+We plot a sample of the baseband I/Q sample data in Figure \ref{fig:iq_data}(a), the DM of which is $1$ pc cm$^{-3}$.
+It is obvious that all apparent time domain feature has been smeared because of the dispersion, so that pure time domain analysis is hardly possible to detect the fake pulsar we simulated here.
+As a comparison, we present the same plot of the I/Q data with DM=0 pc cm$^{-3}$ in Figure \ref{fig:iq_data}(b), in which pulse-like time domain structure can be recognized clearly.
+The I/Q sampling data stream is then sent to an SDR transmitter so that actual radio frequency (RF) signal within desired frequency range is generated continuously.
 The RF signal is fed into a power amplifier and broadcast through a proper antenna. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.95\columnwidth]{dm1_iq.pdf}\\
+    \includegraphics[width=0.95\columnwidth]{dm0_iq.pdf}
+    \caption{The real part of the baseband I/Q data as a function of time. Two periods are shown here. The period is set to be 20 ms, in (a) the DM is set to be 10 pc cm$^{-3}$ and in (b), the DM is set to be 0 pc cm$^{-3}$ for the purpose of comparison.}
+    \label{fig:iq_data}
+\end{figure}
 
 \subsection{Emitting Generated Signal}
 
