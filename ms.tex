@@ -79,52 +79,62 @@ The power of the emitted signal can be amplified to a high enough level so that 
 
 In this section, we describe the algorithms and steps that are used to generate the radio frequency signal, which is later used to tune LFPODs.
 
+\subsection{Important Approximations that We Make}
+The purpose of this work is to present a method of tuning the search of pulsars in low frequency radio band, which is composed of signal receiving/recording and signal detection.
+Dedispersion is an important step in the signal detection stage.
+According to e.g., \citet{2012hpa..book.....L}, it is possible to perform either coherent dedispersion or incoherent dedispersion. The former works on raw baseband data and the latter works on channelized filterbank data. 
+The main different between these two category of dedispersion methods is whether phase information is kept in the input data.
+In order to enable the generated signal suitable to both category of dedispersion methods, we have to ensure that the phase information is treated with caution.
+Considering that fact that the dispersion caused by ISM can cause delays of different frequencies in low frequency band to reach at most $10^2$ s time scale, computing the dispersed pulsar signal online without necessary approximation is infeasible.
+
+We make following approximation when generating the artificial pulsar signal: the pulsar signal (not only the amplitude profile, but also the signal phase) repeats with a period of $n\tau$, where $\tau$ is the period of the pulsar, $n$ is an integer. The value of $n$ is chosen so that it is affordable by the computation resource of the workstation that we use to generate the signal and large enough to ensure good enough statistics in folding. 
+With above approximation the frequency components contained in the signal become discrete so that the phase delays of all the frequency components can be computed precisely.
+
+In practice, we choose the value of $n\tau$ around $1$ s.
+As the signal can be computed offline, this value can reach several seconds to dozens of seconds.
+If incoherent dedispersion method is used, it is also possible to update the repeating signal samples every tens of seconds (this time interval is determined by computing performance), for the phase information is not important. 
+
+
 \subsection{Computing Artificial Pulsar Signal}
-\subsubsection{Generating filterbank data before dispersion}
-The pulse amplitude profile $f$ is related to two variables: frequency $\nu$ and pulse phase $\theta$ and it meets
+\subsubsection{Generating baseband I/Q samples}
+The pulse amplitude profile $f(\theta)$, where $\theta$ is the pulse phase should meet following constraint
 \begin{gather}
-    f(\nu, \theta+1)=f(\nu, \theta)
+    f(\theta+1)=f(\theta).
 \end{gather}
-Given that the bandwidth is not extremely width, it is a good enough assumption that the frequency part and the phase part can be separated as
+In following sections we utilize a Gaussian function with a pulse width parameter $w$ to describe the profile:
 \begin{gather}
-    f(\nu,\theta)=S(\nu)p(\theta),
-\end{gather}
-where $S$ is the spectrum and $p$ is the pure phase-related part.
-In following sections, we simply assume $S(\nu)\equiv 1$. 
-When in actual experiments, no further cost is required if we introduce a non-trivial $S(\nu)$.
-
-By assuming 
-\begin{gather}
-    p(\theta)=\left \{
+    f(\theta)=\left \{
     \begin{array}{rl}
-        p(\theta-1) &\theta \geq 0.5\\
+        f(\theta-1) &\theta \geq 0.5\\
          \exp(-\frac{\theta^2}{2w^2}) & \theta\in[-0.5, 0.5) \\
-        p(\theta+1) &\theta < -0.5\\
+        f(\theta+1) &\theta < -0.5\\
     \end{array}
-    \right ., 
+    \right ..
 \end{gather}
-we calculate an example of the frequency-dependent pulse profile of a fake pulsar with period assumed to be 20 ms, as is shown in Figure \ref{fig:dm0_profile}. The frequency range is assumed to be 150-200 MHz here.
+Assuming a frequency range of $[\nu_{\min}, \nu_{\max}]$, the sampling interval $dt$ is also fixed as $dt=1/B$, where $B=\nu_{\max}-\nu_{\min}$.
+Thus the baseband I/Q sample series is generated as 
+\begin{gather}
+    y_j=f(\frac{j\times dt}{\tau})\frac{x^{\rm re}_j+x^{\rm im}_ji}{2}, j=1..\left \lfloor\frac{n\tau}{dt} \right\rfloor
+\end{gather}
+where each $x^{\rm re}$'s and $x^{\rm im}$'s independently follows a standard normal distribution. 
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.9\columnwidth]{dm0_profile.pdf}
-    \caption{Frequency dependent pulse profile before the dispersion effect is applied. 
-    The period is set to be 20 ms and the amplitude profile is described a Gaussian function with $w=0.05$}
-    \label{fig:dm0_profile}
- \end{figure}
- 
+
  \subsubsection{Applying the dispersion effect}
+  Applying the ISM dispersion effect is simply an inverse operation of coherent dedispersion with some slight differences.
+  According to e.g., \citet{2012hpa..book.....L}, we calculate the dispersed baseband I/Q sample series as
+  \begin{gather}
+      \mathbf{y}^d={\rm IDFT}(\mathbf{Y}^d)
+  \end{gather}
+  \begin{gather}
+      Y_j^d={\rm DFT}(\mathbf{y})_j\exp(2\pi i \nu_j\Delta t(\nu_j)),
+  \end{gather}
+  where ${\rm DFT}$ and ${\rm IDFT}$ denote the forward and backward discrete Fourier transform, respectively, $\mathbf{y}$ is a vector with each of its element to be $y_j$, $\mathbf{Y}$ is a vector with each of its element to be $\mathbf{Y}_j$, $\nu_j$ is the frequency corresponding to the $j$-th frequency channel, and the delay cause by the dispersion is calculated as 
+  \begin{gather}
+     \Delta t(\nu)\simeq 4.15\times 10^6~{\rm ms}~\left(\frac{{\rm MHz}}{\nu}\right)^2\frac{\rm DM}{\rm pc~cm^{-3}},
+ \end{gather}
+ according to e.g., \citet{2012hpa..book.....L}.
  
- Then we need to apply the effects of dispersion to the pulse signal. According to e.g., \citet{2012hpa..book.....L}, the delay of frequency $\nu$ that is caused by the dispersion can be calculated as 
- \begin{gather}
-     \Delta t(\nu)\simeq 4.15\times 10^6~{\rm ms}~\left(\frac{{\rm MHz}}{\nu}\right)^2\frac{\rm DM}{\rm pc~cm^{-3}}.
- \end{gather}
- So that the frequency dependent pulse profile after the dispersion effect is applied can be calculated as
- \begin{gather}
-     f^{\rm d}(\nu, \theta)=f(\nu, \theta-\Delta t(\nu)/\tau),
- \end{gather}
-where $\tau$ is the period of the pulsar. 
-We show an example of frequency-dependent pulse profile after the dispersion effect is applied in Figure \ref{fig:dm1_profile}. The DM is assumed to be 10.0 and other parameters are same as what we set in Figure \ref{fig:dm0_profile}.
+ 
 
  \begin{figure}
     \centering
