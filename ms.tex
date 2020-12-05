@@ -134,15 +134,15 @@ where each $x^{\rm re}$'s and $x^{\rm im}$'s independently follows a standard no
  \end{gather}
  according to e.g., \citet{2012hpa..book.....L}.
  
- 
 
- \begin{figure}
+ \begin{figure*}
     \centering
-    \includegraphics[width=0.9\columnwidth]{dm1_profile.pdf}
-    \caption{Frequency dependent pulse profile with a $\rm DM=1$ pc cm$^{-3}$ dispersion effect applied. The parameter of the pulsar
-    is same as the one used in Figure \ref{fig:dm0_profile}}
-    \label{fig:dm1_profile}
- \end{figure}
+    \includegraphics[width=0.9\columnwidth]{dm0_fb.pdf}
+    \includegraphics[width=0.9\columnwidth]{dm1_fb.pdf}
+    \caption{Frequency dependent pulse profile with a $\rm DM=0$ pc cm$^{-3}$ dispersion effect applied}
+    \label{fig:fb}
+ \end{figure*}
+
 
 \subsubsection{Generating the narrow band I/Q sampling data}
  
@@ -185,10 +185,10 @@ As a comparison, we present the same plot of the I/Q data with DM=0 pc cm$^{-3}$
 The I/Q sampling data stream is then sent to an SDR transmitter so that actual radio frequency (RF) signal within desired frequency range is generated continuously.
 The RF signal is fed into a power amplifier and broadcast through a proper antenna. 
 
-\begin{figure}
+\begin{figure*}
     \centering
-    \includegraphics[width=0.95\columnwidth]{dm1_iq.pdf}\\
     \includegraphics[width=0.95\columnwidth]{dm0_iq.pdf}
+    \includegraphics[width=0.95\columnwidth]{dm1_iq.pdf}
     \caption{The real part of the baseband I/Q data as a function of time. Two periods are shown here. The period is set to be 20 ms, in (a) the DM is set to be 10 pc cm$^{-3}$ and in (b), the DM is set to be 0 pc cm$^{-3}$ for the purpose of comparison.}
     \label{fig:iq_data}
 \end{figure}
