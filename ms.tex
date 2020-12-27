@@ -85,7 +85,7 @@ Dedispersion is an important step in the signal detection stage.
 According to e.g., \citet{2012hpa..book.....L}, it is possible to perform either coherent dedispersion or incoherent dedispersion. The former works on raw baseband data and the latter works on channelized filterbank data. 
 The main different between these two category of dedispersion methods is whether phase information is kept in the input data.
 In order to enable the generated signal suitable to both category of dedispersion methods, we have to ensure that the phase information is treated with caution.
-Considering that fact that the dispersion caused by ISM can cause delays of different frequencies in low frequency band to reach at most $10^2$ s time scale, computing the dispersed pulsar signal online without necessary approximation is infeasible.
+Considering the fact that the dispersion caused by ISM can cause delays of different frequencies in low frequency band to reach at most $10^2$ s time scale, computing the dispersed pulsar signal online without necessary approximation is inefficient.
 
 We make following approximation when generating the artificial pulsar signal: the pulsar signal (not only the amplitude profile, but also the signal phase) repeats with a period of $n\tau$, where $\tau$ is the period of the pulsar, $n$ is an integer. The value of $n$ is chosen so that it is affordable by the computation resource of the workstation that we use to generate the signal and large enough to ensure good enough statistics in folding. 
 With above approximation the frequency components contained in the signal become discrete so that the phase delays of all the frequency components can be computed precisely.
